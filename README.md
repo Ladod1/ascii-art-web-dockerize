@@ -5,19 +5,19 @@ A Go web server that turns text into ASCII art, packaged with Docker.
 ## Run with Docker
 
 ```sh
-./docker.sh build   # build the image ascii-art-web:1.0.0
-./docker.sh run     # start the container on port 8000
-./docker.sh stop    # stop and remove the container
-./docker.sh clean   # remove the container, the image, unused objects and build cache
-./docker.sh all     # build + run + remove dangling images
+./docker/docker.sh build   # build the image ascii-art-web:1.0.0
+./docker/docker.sh run     # start the container on port 8000
+./docker/docker.sh stop    # stop and remove the container
+./docker/docker.sh clean   # remove the container, the image, unused objects and build cache
+./docker/docker.sh all     # build + run + remove dangling images
 ```
 
 Then open <http://localhost:8000>.
 
-Or with plain Docker commands:
+Or with plain Docker commands, from the project root:
 
 ```sh
-docker image build -t ascii-art-web:1.0.0 .
+docker image build -f docker/Dockerfile -t ascii-art-web:1.0.0 .
 docker container run -d --name ascii-art-web -p 8000:8000 ascii-art-web:1.0.0
 ```
 
@@ -29,7 +29,7 @@ go run .
 
 ## Docker details
 
-- **Dockerfile** uses a multi-stage build: Go is compiled in `golang:1.22-alpine`,
+- **docker/Dockerfile** uses a multi-stage build: Go is compiled in `golang:1.22-alpine`,
   and only the binary, templates, CSS and banners are copied into a small
   `alpine` image (about 22 MB). The server runs as a non-root user.
 - **Metadata**: the image has `LABEL`s (OCI title, description, version, source,
@@ -44,7 +44,9 @@ go run .
   new one, prunes dangling images after a build, and `clean` removes everything
   the project created (filtered by the `project=ascii-art-web-dockerize` label)
   plus the build cache.
-- **.dockerignore** keeps `.git` and other unneeded files out of the build context.
+- **docker/Dockerfile.dockerignore** keeps `.git` and other unneeded files out of the
+  build context. Docker reads it because it sits next to the Dockerfile and has
+  the Dockerfile's name.
 
 ## Files
 
@@ -56,9 +58,9 @@ asciia/              makes the ASCII art
 templates/           index.html and error.html
 static/style.css     the design
 style/               the banner files
-Dockerfile           builds the image
-.dockerignore        files left out of the image
-docker.sh            build / run / stop / clean helper
+docker/Dockerfile                builds the image
+docker/Dockerfile.dockerignore   files left out of the image
+docker/docker.sh                 build / run / stop / clean helper
 ```
 
 Only Go standard packages are used.

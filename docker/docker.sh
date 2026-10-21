@@ -2,6 +2,9 @@
 # Build, run, stop and clean the ascii-art-web Docker objects.
 set -e
 
+# Always build from the project root, wherever the script is run from.
+cd "$(dirname "$0")/.."
+
 IMAGE="ascii-art-web"
 TAG="1.0.0"
 CONTAINER="ascii-art-web"
@@ -11,6 +14,7 @@ build() {
 	docker image build \
 		--label "maintainer=ascii-art-web team" \
 		--label "project=ascii-art-web-dockerize" \
+		-f docker/Dockerfile \
 		-t "$IMAGE:$TAG" -t "$IMAGE:latest" .
 }
 
